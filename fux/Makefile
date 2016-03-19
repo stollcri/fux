@@ -22,8 +22,9 @@ ifeq ($(strip $(SCAN_BUILD_WHICH)),)
 	SCAN_BUILD_EXISTS := @echo "\nERROR:\n scan-build not found.\n See: http://clang-analyzer.llvm.org/installation\n" && exit 1
 endif
 
+.PHONY: default fux test debug run analysis findtrouble run-old clean install
 
-default: findtrouble fux
+default: fux
 test: debug run
 
 debug:
@@ -45,17 +46,12 @@ findtrouble:
 	grep -inR -e strcpy\( -e strcat\( -e scanf\( -e gets\( .
 
 run:
-	# time echo "apt-get r\c" | bin/fux
+	time echo "apt-get r\c" | bin/fux
 	# time echo "brew indtall vim\c" | bin/fux
-	time echo "aptget insta remove vim\c" | bin/fux
-
-run-old:
-	# bin/fux $(history 2 | sed -n 1p | xargs | cut -d " " -f2-)
-	# alias fux='bin/fux $(history 2 | sed -n 1p | xargs | cut -d " " -f2-)'
+	# time echo "aptget insta remove vim\c" | bin/fux
 
 clean:
 	rm -r bin/*
-	rm -r dbg
 	rm -r tst/out/20*
 
 fux:
