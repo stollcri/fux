@@ -1,0 +1,17 @@
+.\" Manpage for fux.
+.\" Contact https://github.com/stollcri/ to correct errors or typos.
+.TH man 1 "17 March 2016" "0.1" "fux man page"
+.SH NAME
+fux \- Fix mistakes in previous commands
+.SH SYNOPSIS
+fux
+.SH DESCRIPTION
+Utility to automatically fix errors in the last typed command
+.SH OPTIONS
+The fux command does not take any options.
+.SH SEE ALSO
+bash(1)
+.SH BUGS
+No known bugs.
+.SH AUTHOR
+Christopher Stoll (@stollcri)

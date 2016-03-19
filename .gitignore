@@ -1,0 +1,6 @@
+.DS_Store
+*.xcuserstate
+
+fux/dbg
+fux/bin/fux.dSYM
+fux/tst/out/20*
