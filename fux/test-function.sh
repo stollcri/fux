@@ -43,6 +43,7 @@ prove "aptget remove vim" "# sudo apt-get remove vim"
 prove "apt remove vim" "# sudo apt-get remove vim"
 
 prove "brew install vim" "# brew install vim"
+prove "brew insta11 vim" "# brew install vim"
 prove "berw inst vim" "# brew install vim"
 
 prove "dockr up" "# docker up"

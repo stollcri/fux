@@ -43,8 +43,8 @@ sudo apt-get clean
 sudo apt-get dist-upgrade
 sudo apt-get download *
 sudo apt-get install *
-sudo apt-get install * --no-upgrade
-sudo apt-get install * --only-upgrade
+sudo apt-get install --no-upgrade *
+sudo apt-get install --only-upgrade *
 sudo apt-get purge *
 sudo apt-get remove *
 sudo apt-get remove * --purge
@@ -77,4 +77,3 @@ yum list installed
 yum list kernel
 yum provides *
 yum updateinfo *
-history

@@ -107,6 +107,7 @@ static inline char **readconfigfile(char *configfilename, int *possibilitycount)
 	    fprintf(stderr, "IO error: %s\n", strerror(errno));
 	    exitapp(EXIT_FAILURE);
 	}
+	fclose(configfile);
 
 	*possibilitycount = filelineposition;
 	return configlines;
@@ -198,7 +199,7 @@ int main(int argc, char **argv)
 	// load possible corrections
 	int possibilitycount = 0;
 	char **possibilities = NULL;
-	possibilities = readconfigfile("./.fux", &possibilitycount);
+	possibilities = readconfigfile(".fux", &possibilitycount);
 
 	// write the recomended command string, then close the target file
 	char *recomendedstring = NULL;

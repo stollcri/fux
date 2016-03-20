@@ -22,10 +22,11 @@ ifeq ($(strip $(SCAN_BUILD_WHICH)),)
 	SCAN_BUILD_EXISTS := @echo "\nERROR:\n scan-build not found.\n See: http://clang-analyzer.llvm.org/installation\n" && exit 1
 endif
 
-.PHONY: default fux test debug run analysis findtrouble run-old clean install
+.PHONY: default fux test debug run testall run-test analysis findtrouble run-old clean install
 
 default: fux
 test: debug run
+testall: debug run-test
 
 debug:
 	@mkdir -p ./bin/
@@ -50,7 +51,10 @@ run:
 	# time echo "brew indtall vim\c" | bin/fux
 	# time echo "aptget insta remove vim\c" | bin/fux
 	# time echo "hisotry\c" | bin/fux
-	time echo "aptget remove vim\c" | bin/fux
+	time echo "apt-get install docker\c" | bin/fux
+
+run-test:
+	./test-function.sh
 
 clean:
 	rm -r bin/*
