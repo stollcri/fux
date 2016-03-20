@@ -58,6 +58,60 @@ static inline void setinterupthandlers()
 	signal(SIGINT, handleinterupt);
 }
 
+static inline char **readconfigfile(char *configfilename, int *possibilitycount)
+{
+	FILE *configfile = fopen(configfilename, "r");
+	if (configfile == NULL) {
+		fprintf(stderr, "Error opening '%s': %s\n", configfilename, strerror(errno));
+		exitapp(EXIT_FAILURE);
+	}
+
+	char currentchar;
+	int stringposition = 0;
+	int filelineposition = 0;
+	int linelength = FILE_LINE_BLOCK_LENGTH;
+	int linescount = FILE_LINES_BLOCK_COUNT;
+	char *configline = (char*)malloc(linelength * sizeof(char));
+	char **configlines = malloc(linescount * sizeof(char*));
+
+	while ((currentchar = fgetc(configfile)) != EOF) {
+		if (currentchar == '\n') {
+			// end the last line
+			configline[stringposition] = '\0';
+			// add the line to the array
+			configlines[filelineposition] = configline;
+			// increment the line counter
+			++filelineposition;
+			// resize the line count as needed
+			if (filelineposition >= linescount) {
+				linescount += FILE_LINES_BLOCK_COUNT;
+				configlines = realloc(configlines, linescount * sizeof(char*));
+			}
+			// reset the position for the next line
+			stringposition = 0;
+			// reset the line length
+			linelength = FILE_LINE_BLOCK_LENGTH;
+			// start a new line
+			configline = (char*)malloc(linelength * sizeof(char));
+		} else {
+			configline[stringposition] = currentchar;
+			++stringposition;
+			// resize the line string as needed
+			if (stringposition >= linelength) {
+				linelength += FILE_LINE_BLOCK_LENGTH;
+				configline = realloc(configline, linelength * sizeof(char));
+			}
+		}
+	}
+	if (ferror(configfile)) {
+	    fprintf(stderr, "IO error: %s\n", strerror(errno));
+	    exitapp(EXIT_FAILURE);
+	}
+
+	*possibilitycount = filelineposition;
+	return configlines;
+}
+
 static inline void readcommandstring(FILE *commandfile, char *commandstring, int *commandlength)
 {
 	int stringposition = 0;
@@ -71,6 +125,10 @@ static inline void readcommandstring(FILE *commandfile, char *commandstring, int
 			commandstring = realloc(commandstring, *commandlength * sizeof(char));
 		}
 	}
+	if (ferror(commandfile)) {
+	    fprintf(stderr, "IO error: %s\n", strerror(errno));
+	    exitapp(EXIT_FAILURE);
+	}
 	commandstring[stringposition] = '\0';
 }
 
@@ -81,21 +139,36 @@ static inline void readcommandstring(FILE *commandfile, char *commandstring, int
 int main(int argc, char **argv)
 {
 	// first thing, prepare to be interupted
+	// (this shouldn't be needed at all, but just in case)
 	setinterupthandlers();
 
+	char *argone = argv[1];
 	FILE *infile = NULL;
 	FILE *outfile = NULL;
 	if (argc > 1) {
 		// if the first argument is dash, then read from stdin
-		if(!strcmp(argv[1], "-")) {
+		if(!strcmp(argone, "-")) {
 			infile = stdin;
 			outfile = stdout;
 		// if the first argument is not dash, assume it's a file name
 		} else {
-			infile = fopen(argv[1], "r");
+			infile = fopen(argone, "r");
 			if (infile == NULL) {
-				fprintf(stderr, "Error opening '%s': %s\n", argv[1], strerror(errno));
-				exitapp(EXIT_FAILURE);
+				int showversion = 0;
+				if ((argone[0] == '-') && (argone[1] == 'v')) {
+					showversion = 1;
+				} else if ((argone[0] == '-') && (argone[1] == '-') && (argone[2] == 'v')) {
+					showversion = 1;
+				} else {
+					fprintf(stderr, "Error opening '%s': %s\n", argone, strerror(errno));
+					exitapp(EXIT_FAILURE);
+				}
+				if (showversion == 1) {
+					printf(PROGRAM_NAME " " PROGRAM_VERS "\n");
+					printf(PROGRAM_COPY "\n");
+					printf(PROGRAM_URLS "\n");
+					exitapp(EXIT_SUCCESS);
+				}
 			}
 		}
 	// otherwise read from stdin
@@ -113,32 +186,26 @@ int main(int argc, char **argv)
 	// we need to write results back to the source file
 	if (outfile == NULL) {
 		// re-open the source file for writing (and clear it)
-		outfile = fopen(argv[1], "w");
+		outfile = fopen(argone, "w");
+		if (outfile == NULL) {
+			fprintf(stderr, "Error opening '%s': %s\n", argone, strerror(errno));
+			exitapp(EXIT_FAILURE);
+		}
 	}
 
-
+	// load possible corrections
+	int possibilitycount = 0;
+	char **possibilities = NULL;
+	possibilities = readconfigfile("./.fux", &possibilitycount);
 
 	// write the recomended command string, then close the target file
-	char *recomendedstring;
-
-	int possibilitycount = 6;
-	// TODO: load from file
-	char *possibilities[possibilitycount];
-	possibilities[0] = "brew install *";
-	possibilities[1] = "git branch";
-	possibilities[2] = "git push --set-upstream *";
-	possibilities[3] = "make test";
-	possibilities[4] = "sudo apt-get remove * --confirm";
-	possibilities[5] = "sudo apt-get install * -?";
+	char *recomendedstring = NULL;
 	recomendedstring = bestmatch(commandstring, possibilities, possibilitycount);
-	printf("# %s\n", commandstring);
 
-	fputs("# ", outfile);
+	if (DEBUG_OUTPUT) fputs("# ", outfile);
 	fputs(recomendedstring, outfile);
 	fputs("\n", outfile);
 	fclose(outfile);
-
-
 
 	exitapp(EXIT_SUCCESS);
 }

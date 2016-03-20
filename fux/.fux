@@ -1,0 +1,79 @@
+apt-cache pkgnames *
+apt-cache search *
+apt-cache show *
+apt-cache showpkg *
+apt-cache stats
+brew create *
+brew edit *
+brew install *
+docker up
+git add *
+git branch *
+git checkout *
+git clean *
+git clone *
+git commit -m *
+git config --global --edit
+git config --global alias *
+git config --global user.email *
+git config --global user.name *
+git config --system core.editor
+git init *
+git init --bare *
+git log *
+git log --graph --decorate --oneline *
+git log --oneline *
+git log --stat *
+git push --set-upstream *
+git reset *
+git status
+history
+npm init
+npm search *
+pip install *
+pip search *
+pip show *
+pip uninstall *
+sudo apt-get autoclean
+sudo apt-get autoremove *
+sudo apt-get build-dep *
+sudo apt-get changelog *
+sudo apt-get check
+sudo apt-get clean
+sudo apt-get dist-upgrade
+sudo apt-get download *
+sudo apt-get install *
+sudo apt-get install * --no-upgrade
+sudo apt-get install * --only-upgrade
+sudo apt-get purge *
+sudo apt-get remove *
+sudo apt-get remove * --purge
+sudo apt-get source *
+sudo apt-get source --compile *
+sudo apt-get source --download-only *
+sudo apt-get update
+sudo apt-get upgrade
+sudo easy_install pip
+sudo npm install *
+sudo npm install -g *
+sudo npm uninstall *
+sudo npm update
+sudo yum check-update
+sudo yum downgrade *
+sudo yum erase *
+sudo yum install *
+sudo yum localinstall *
+sudo yum provides *
+sudo yum reinstall *
+sudo yum remove *
+sudo yum search *
+sudo yum swap *
+sudo yum update *
+vagrant up
+yum info *
+yum list all
+yum list available
+yum list installed
+yum list kernel
+yum provides *
+yum updateinfo *

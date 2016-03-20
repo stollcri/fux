@@ -190,6 +190,7 @@ static int fillmatrix(int *dpmatrix, int xsize, int ysize, char *xstring, char *
 	int indexleft = 0;
 	int indexabove = 0;
 
+	if (DEBUG_PRINT_MATRIX) printf("\n");
 	for (int y = 0; y < ysize; ++y) {
 		for (int x = 0; x < xsize; ++x) {
 			currentxchar = xstring[x - 1];
@@ -236,23 +237,25 @@ static int fillmatrix(int *dpmatrix, int xsize, int ysize, char *xstring, char *
 				}
 			}
 
-			if ((x == 0) || (y == 0)) {
-				if ((x == 0) && (y == 0)) {
-					printf("  ");
+			if (DEBUG_PRINT_MATRIX) {
+				if ((x == 0) || (y == 0)) {
+					if ((x == 0) && (y == 0)) {
+						printf("  ");
+					}
+					if ((x != 0) && (y == 0)) {
+						printf("_%c_ ", currentxchar);
+					}
+					if ((x == 0) && (y != 0)) {
+						printf("%c ", currentychar);
+					}
+				} else {
+					printf("%3d ", dpmatrix[currentindex]);
 				}
-				if ((x != 0) && (y == 0)) {
-					printf("_%c_ ", currentxchar);
-				}
-				if ((x == 0) && (y != 0)) {
-					printf("%c ", currentychar);
-				}
-			} else {
-				printf("%3d ", dpmatrix[currentindex]);
 			}
 		}
-		printf("\n");
+		if (DEBUG_PRINT_MATRIX) printf("\n");
 	}
-	printf("\n");
+	if (DEBUG_PRINT_MATRIX) printf("\n");
 	return result;
 }
 
@@ -275,7 +278,7 @@ static struct backtrackresults *backtrack(int *dpmatrix, int xsize, int ysize, c
 			localmaxindex = currentindex;
 			localmax = dpmatrix[localmaxindex];
 			argumentxcut = x;//xsize - x - 1;
-			printf("=1=> %d : %d (%d, %d)\n", localmax, argumentxcut, currentindex, xsize);
+			if (DEBUG_PRINT_ARGPOS) printf("=1=> %d : %d (%d, %d)\n", localmax, argumentxcut, currentindex, xsize);
 		}
 	}
 
@@ -285,8 +288,8 @@ static struct backtrackresults *backtrack(int *dpmatrix, int xsize, int ysize, c
 		if (dpmatrix[currentindex] > localmax) {
 			localmaxindex = currentindex;
 			localmax = dpmatrix[localmaxindex];
-			argumentxcut = (xsize - 1);
-			printf("=2=> %d : %d (%d, %d)\n", localmax, argumentxcut, currentindex, xsize);
+			argumentxcut = 1;
+			if (DEBUG_PRINT_ARGPOS) printf("=2=> %d : %d (%d, %d)\n", localmax, argumentxcut, currentindex, xsize);
 		}
 	}
 
@@ -307,7 +310,7 @@ static struct backtrackresults *backtrack(int *dpmatrix, int xsize, int ysize, c
 		if (dpmatrix[currentindex] > globalmax) {
 			globalmax = dpmatrix[currentindex];
 			argumentxcut = abs((int)remainder((float)currentindex, (float)xsize));
-			printf("=3=> %d : %d (%d, %d)\n", globalmax, argumentxcut, currentindex, xsize);
+			if (DEBUG_PRINT_ARGPOS) printf("=3=> %d : %d (%d, %d)\n", globalmax, argumentxcut, currentindex, xsize);
 		}
 
 		indexleft = currentindex - 1;
@@ -364,7 +367,7 @@ static struct backtrackresults *backtrack(int *dpmatrix, int xsize, int ysize, c
 		++argindex;
 	}
 	commandargs[argindex] = '\0';
-	printf("<<< %s >>>\n", commandargs);
+	if (DEBUG_PRINT_ARGVAL) printf("===> '%s'\n", commandargs);
 
 	results->commandargs = commandargs;
 	results->score = globalmax;
@@ -384,7 +387,7 @@ static struct backtrackresults *dpscore(char *commandstring, char *possibility)
 	btresults = backtrack(dpmatrix, xsize, ysize, commandstring);
 
 	score = btresults->score;
-	printf("||| %d |||\n", score);
+	if (DEBUG_PRINT_SCORES) printf("%4d %s\n", score, possibility);
 
 	if(dpmatrix) {
 		free(dpmatrix);
@@ -392,27 +395,37 @@ static struct backtrackresults *dpscore(char *commandstring, char *possibility)
 	return btresults;
 }
 
-char *buildcommand(char *commandstr, char *commandarg)
+char *buildcommand(char *commandstr, char *commandarg, int score)
 {
 	int cmdsize = strlen(commandstr) + 1;
 	int argsize = strlen(commandarg) + 1;
 	int newsize = (cmdsize + argsize + 1);
+	if (score < MINIMUM_GOOD_SCORE) {
+		newsize += 2; 
+	}
 	char *result = (char*)malloc(newsize * sizeof(char));
+	int wildcardused = 0;
 
-	int j = 0;
-	for (int i = 0; i < cmdsize; ++i) {
-		if (commandstr[i] != '*') {
-			result[j] = commandstr[i];
-			++j;
+	int resultindex = 0;
+	if (score < MINIMUM_GOOD_SCORE) {
+		result[resultindex] = '#';
+		resultindex = 1;
+	}
+	for (int cmdindex = 0; cmdindex < cmdsize; ++cmdindex) {
+		if (commandstr[cmdindex] != '*') {
+			result[resultindex] = commandstr[cmdindex];
+			++resultindex;
 		} else {
-			printf("ok\n");
-			for (int k = 0; k < argsize; ++k) {
-				result[j] = commandarg[k];
-				++j;
+			if (!wildcardused) {
+				wildcardused = 1;
+				for (int argindex = 0; argindex < argsize; ++argindex) {
+					result[resultindex] = commandarg[argindex];
+					++resultindex;
+				}
 			}
 		}
 	}
-	result[j] = '\0';
+	result[resultindex] = '\0';
 	return result;
 }
 
@@ -421,17 +434,26 @@ char *bestmatch(char *commandstring, char **possibilities, int possibilitycount)
 	int maxscore = 0;
 	int maxscoreid = 0;
 	char *maxscoreargs = NULL;
-	struct backtrackresults *btresults;
+	struct backtrackresults *btresults = NULL;
 
 	for (int i = 0; i < possibilitycount; ++i) {
-		btresults = dpscore(commandstring, possibilities[i]);
-		btresults->score = btresults->score;
-		if (btresults->score > maxscore) {
-			maxscoreid = i;
-			maxscore = btresults->score;
-			maxscoreargs = btresults->commandargs;
+		if (possibilities[i]) {
+			btresults = dpscore(commandstring, possibilities[i]);
+			btresults->score = btresults->score;
+			if (btresults->score > maxscore) {
+				maxscoreid = i;
+				maxscore = btresults->score;
+				maxscoreargs = btresults->commandargs;
+			}
+			if (btresults) {
+				free(btresults);
+			}
 		}
 	}
 
-	return buildcommand(possibilities[maxscoreid], maxscoreargs);
+	if (maxscoreargs) {
+		return buildcommand(possibilities[maxscoreid], maxscoreargs, maxscore);
+	} else {
+		return commandstring;
+	}
 }

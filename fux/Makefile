@@ -46,9 +46,10 @@ findtrouble:
 	grep -inR -e strcpy\( -e strcat\( -e scanf\( -e gets\( .
 
 run:
-	time echo "apt-get r\c" | bin/fux
+	# time echo "apt-get r\c" | bin/fux
 	# time echo "brew indtall vim\c" | bin/fux
 	# time echo "aptget insta remove vim\c" | bin/fux
+	time echo "aptget remove vim\c" | bin/fux
 
 clean:
 	rm -r bin/*
@@ -61,6 +62,10 @@ fux:
 install:
 	cp bin/fux /usr/local/bin/fux
 	chown root:wheel /usr/local/bin/fux
+
 	mkdir -p /usr/local/man/
 	cp doc/fux /usr/local/man/fux.1
 	chown root:wheel /usr/local/man/fux.1
+
+	cp .fux ~/.fux
+	

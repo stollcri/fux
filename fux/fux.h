@@ -35,6 +35,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#define DEBUG_OUTPUT 1
+
+#define PROGRAM_NAME "fux"
+#define PROGRAM_VERS "0.1"
+#define PROGRAM_URLS "https://github.com/stollcri/fux"
+#define PROGRAM_COPY "Copyright 2016, Christopher Stoll"
+
 #define COMMAND_STRING_BLOCK_LENGTH 256
+#define FILE_LINES_BLOCK_COUNT 128
+#define FILE_LINE_BLOCK_LENGTH 64
 
 #endif

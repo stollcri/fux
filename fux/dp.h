@@ -35,6 +35,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#define DEBUG_PRINT_MATRIX 0
+#define DEBUG_PRINT_ARGPOS 0
+#define DEBUG_PRINT_ARGVAL 0
+#define DEBUG_PRINT_SCORES 0
+
 #define MOVE_COST 0
 #define SCORE_MATCH 10
 #define SCORE_WILDCARD 8
@@ -42,6 +47,7 @@
 #define PENALTY_GAP -3
 #define PENALTY_MISMATCH -5
 #define PENALTY_TRANSPOSE -2
+#define MINIMUM_GOOD_SCORE 85
 
 struct backtrackresults {
 	int score;
