@@ -49,6 +49,7 @@ run:
 	# time echo "apt-get r\c" | bin/fux
 	# time echo "brew indtall vim\c" | bin/fux
 	# time echo "aptget insta remove vim\c" | bin/fux
+	# time echo "hisotry\c" | bin/fux
 	time echo "aptget remove vim\c" | bin/fux
 
 clean:
@@ -68,4 +69,3 @@ install:
 	chown root:wheel /usr/local/man/fux.1
 
 	cp .fux ~/.fux
-	

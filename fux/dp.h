@@ -47,7 +47,9 @@
 #define PENALTY_GAP -3
 #define PENALTY_MISMATCH -5
 #define PENALTY_TRANSPOSE -2
-#define MINIMUM_GOOD_SCORE 85
+
+#define EXPECTED_BOX_SCORE 7
+#define MINIMUM_GOOD_SCORE 75
 
 struct backtrackresults {
 	int score;

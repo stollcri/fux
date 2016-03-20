@@ -360,6 +360,7 @@ static struct backtrackresults *backtrack(int *dpmatrix, int xsize, int ysize, c
 	}
 
 	// 3. Find the argument portion of the given command string
+	
 	int argindex = 0;
 	char *commandargs = (char*)malloc((xsize - argumentxcut + 1) * sizeof(char));
 	for (int i = (xsize - (argumentxcut + 1)); i < xsize; ++i) {
@@ -369,8 +370,10 @@ static struct backtrackresults *backtrack(int *dpmatrix, int xsize, int ysize, c
 	commandargs[argindex] = '\0';
 	if (DEBUG_PRINT_ARGVAL) printf("===> '%s'\n", commandargs);
 
+	int scorepercent = (int)(((double)globalmax / (double)(xsize * EXPECTED_BOX_SCORE)) * 100);
+
 	results->commandargs = commandargs;
-	results->score = globalmax;
+	results->score = scorepercent;
 	return results;
 }
 

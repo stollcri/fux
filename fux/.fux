@@ -77,3 +77,4 @@ yum list installed
 yum list kernel
 yum provides *
 yum updateinfo *
+history

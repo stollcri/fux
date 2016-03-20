@@ -117,12 +117,14 @@ static inline void readcommandstring(FILE *commandfile, char *commandstring, int
 	int stringposition = 0;
 	char currentchar;
 	while ((currentchar = fgetc(commandfile)) != EOF) {
-		commandstring[stringposition] = currentchar;
-		++stringposition;
-		// resize the command string as needed
-		if (stringposition >= *commandlength) {
-			*commandlength = *commandlength + COMMAND_STRING_BLOCK_LENGTH;
-			commandstring = realloc(commandstring, *commandlength * sizeof(char));
+		if (currentchar != '\n') {
+			commandstring[stringposition] = currentchar;
+			++stringposition;
+			// resize the command string as needed
+			if (stringposition >= *commandlength) {
+				*commandlength = *commandlength + COMMAND_STRING_BLOCK_LENGTH;
+				commandstring = realloc(commandstring, *commandlength * sizeof(char));
+			}
 		}
 	}
 	if (ferror(commandfile)) {
