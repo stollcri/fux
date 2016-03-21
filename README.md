@@ -1,5 +1,7 @@
 # Fux
 
+**Note:** This is beta software which is not ready for production use. It has been commited in debug mode which will prevent commands from actually being re-ran.
+
 Fux is a command line tool to automatically fix mistakes in the last command you typed. This utility works with `fc`, a tool which enables editing and reexecution reviously run commands, to automatically correct previous commnds. Once fux is installed (`make && make install`) create an alias to fc where fux is the designated editor (e.g. `alias fc='fc -e /usr/local/bin/fux'`). Then, typing `fc` will automatically fix and re-run the last command.
 
 If there is too low of a probablitity that the suggested command is correct, then fux will reissue the command as a comment (it will be preceeded with "#"). Then, (On a Mac) press the up-arrow, then ctrl-a, and delete the comment marker.

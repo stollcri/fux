@@ -10,6 +10,7 @@ docker up
 git add *
 git branch *
 git checkout *
+git checkout -b *
 git clean *
 git clone *
 git commit -m *
@@ -24,6 +25,7 @@ git log *
 git log --graph --decorate --oneline *
 git log --oneline *
 git log --stat *
+git push *
 git push --set-upstream *
 git reset *
 git status
